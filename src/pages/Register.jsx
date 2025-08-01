@@ -5,17 +5,20 @@ import axiosInstance from "../api/axiosInstance";
 import { useDispatch, useSelector } from "react-redux";
 import { manageUiSelector } from "../slices/manageUI/uiStateSelector";
 import { updateLoading } from "../slices/manageUI/uiStateSlice";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 const Register = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading } = useSelector(manageUiSelector);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
 
-  const dispatch = useDispatch();
-  const { loading } = useSelector(manageUiSelector);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -23,6 +26,10 @@ const Register = () => {
       [e.target.name]: e.target.value,
     }));
   };
+
+  const isEmailValid = formData.email.match(/^\S+@\S+\.\S+$/);
+  const isPasswordValid = formData.password.length >= 6;
+  const isFormValid = formData.name.trim() && isEmailValid && isPasswordValid;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,15 +48,12 @@ const Register = () => {
         toast.error("Invalid login response");
       }
     } catch (err) {
-      console.error("Login failed:", err);
-      toast.error(err?.response?.data?.message || "Login failed");
+      console.error("Register failed:", err);
+      toast.error(err?.response?.data?.message || "Register failed");
     } finally {
       dispatch(updateLoading(false));
     }
   };
-
-  const isFormValid =
-    formData.name.trim() && formData.email.trim() && formData.password.trim();
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
@@ -64,11 +68,13 @@ const Register = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Your Name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="name"
               required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
+          {/* Email */}
           <div>
             <label className="block mb-1 text-gray-700">Email</label>
             <input
@@ -76,23 +82,46 @@ const Register = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="you@example.com"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="email"
               required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {!isEmailValid && formData.email && (
+              <p className="text-sm text-red-500 mt-1">Enter a valid email</p>
+            )}
           </div>
           <div>
             <label className="block mb-1 text-gray-700">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="password"
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-2.5 text-gray-600"
+              >
+                {showPassword ? (
+                  <AiFillEyeInvisible size={20} />
+                ) : (
+                  <AiFillEye size={20} />
+                )}
+              </button>
+            </div>
+            {!isPasswordValid && formData.password && (
+              <p className="text-sm text-red-500 mt-1">
+                Password must be at least 6 characters
+              </p>
+            )}
           </div>
+
+          {/* Submit */}
           <button
             type="submit"
             disabled={loading || !isFormValid}
