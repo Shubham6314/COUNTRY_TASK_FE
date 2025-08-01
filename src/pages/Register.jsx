@@ -29,7 +29,10 @@ const Register = () => {
 
   const isEmailValid = formData.email.match(/^\S+@\S+\.\S+$/);
   const isPasswordValid = formData.password.length >= 6;
-  const isFormValid = formData.name.trim() && isEmailValid && isPasswordValid;
+  const isNameValid = /^[A-Za-z\s]+$/.test(formData.name.trim());
+
+  const isFormValid =
+    formData.name.trim() && isEmailValid && isPasswordValid && isNameValid;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,9 +75,10 @@ const Register = () => {
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {!isNameValid && formData.name && (
+              <p className="text-sm text-red-500 mt-1">Enter a valid name</p>
+            )}
           </div>
-
-          {/* Email */}
           <div>
             <label className="block mb-1 text-gray-700">Email</label>
             <input
