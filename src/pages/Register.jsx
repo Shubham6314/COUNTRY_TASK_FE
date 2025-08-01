@@ -125,7 +125,6 @@ const Register = () => {
             )}
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading || !isFormValid}

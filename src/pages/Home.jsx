@@ -8,6 +8,9 @@ import { updateCountriesList } from "../slices/manageCountries/countriesSlice";
 import { manageUiSelector } from "../slices/manageUI/uiStateSelector";
 import { updateLoading } from "../slices/manageUI/uiStateSlice";
 import Loading from "../components/Loading";
+import CountryList from "../components/CountryList";
+import CountrySearch from "../components/CountrySearch";
+import toast from "react-hot-toast";
 
 const Home = () => {
   const [search, setSearch] = useState("");
@@ -58,14 +61,16 @@ const Home = () => {
       } else {
         dispatch(updateCountriesList([]));
       }
-    }, 500);
+    }, 2000);
 
     return () => clearTimeout(delayDebounce);
   }, [search]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     navigate("/login");
+    toast.success("Logout successful!");
   };
 
   return (
@@ -80,30 +85,18 @@ const Home = () => {
         </button>
       </div>
 
-      <input
-        type="text"
-        placeholder="Search country by name"
-        className="w-full p-2 border rounded mb-4 outline-none"
+      <CountrySearch
+        type={"text"}
+        placeholder={"Search country by name"}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-
       {loading ? (
         <Loading />
       ) : search.trim() && countriesData.length === 0 ? (
         <p className="text-center text-gray-500">No matching country found.</p>
       ) : (
-        <ul className="space-y-2">
-          {countriesData?.map((country) => (
-            <li
-              key={country.cca2}
-              className="p-3 bg-gray-100 rounded hover:bg-gray-200 cursor-pointer"
-              onClick={() => navigate(`/country/${country.cca2}`)}
-            >
-              {country.name}
-            </li>
-          ))}
-        </ul>
+        <CountryList countriesData={countriesData} />
       )}
     </div>
   );
