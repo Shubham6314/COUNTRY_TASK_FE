@@ -4,13 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constant";
 import { useDispatch, useSelector } from "react-redux";
 import { manageCountriesSelector } from "../slices/manageCountries/countriesSelector";
-import { updateCountriesList } from "../slices/manageCountries/countriesSlice";
+import {
+  updateCountriesDetailsData,
+  updateCountriesList,
+} from "../slices/manageCountries/countriesSlice";
 import { manageUiSelector } from "../slices/manageUI/uiStateSelector";
 import { updateLoading } from "../slices/manageUI/uiStateSlice";
 import Loading from "../components/Loading";
 import CountryList from "../components/CountryList";
 import CountrySearch from "../components/CountrySearch";
 import toast from "react-hot-toast";
+import RecentSearches from "../components/RecentSearches";
 
 const Home = () => {
   const [search, setSearch] = useState("");
@@ -44,16 +48,15 @@ const Home = () => {
         dispatch(updateCountriesList([]));
       }
     } catch (err) {
-      if (err.response && err.response.status === 404) {
-        dispatch(updateCountriesList([]));
-      } else {
-        dispatch(updateCountriesList([]));
-      }
+      dispatch(updateCountriesList([]));
     } finally {
       dispatch(updateLoading(false));
     }
   };
-
+  useEffect(() => {
+    setSearch("");
+    dispatch(updateCountriesList([]));
+  }, []);
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       if (search.trim()) {
@@ -68,36 +71,47 @@ const Home = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.removeItem("recentSearches");
     navigate("/login");
     toast.success("Logout successful!");
+    dispatch(updateCountriesDetailsData(null));
   };
-
   return (
-    <div className="max-w-3xl mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold">🌍 Country Search</h1>
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
-          Logout
-        </button>
-      </div>
+    <div className="min-h-screen py-10 px-4 ">
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="bg-white shadow-md rounded-lg p-4">
+          <RecentSearches />
+        </div>
 
-      <CountrySearch
-        type={"text"}
-        placeholder={"Search country by name"}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-      {loading ? (
-        <Loading />
-      ) : search.trim() && countriesData.length === 0 ? (
-        <p className="text-center text-gray-500">No matching country found.</p>
-      ) : (
-        <CountryList countriesData={countriesData} />
-      )}
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-semibold flex items-center gap-2">
+              🌍 <span className="text-gray-800">Country Search</span>
+            </h1>
+            <button
+              onClick={handleLogout}
+              className="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-6 py-2 rounded-full shadow hover:shadow-lg hover:opacity-90 transition"
+            >
+              Logout
+            </button>
+          </div>
+          <CountrySearch
+            type="text"
+            placeholder="Search country by name"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        {loading ? (
+          <Loading />
+        ) : countriesData?.length === 0 ? (
+          <p className="text-center text-red-500 text-lg font-medium mt-4">
+            No matching country found.
+          </p>
+        ) : (
+          <CountryList countriesData={countriesData} />
+        )}
+      </div>
     </div>
   );
 };

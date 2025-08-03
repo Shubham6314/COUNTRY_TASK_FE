@@ -1,53 +1,78 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const CountryCardDetails = ({ countriesDetailsData, code }) => {
   const navigate = useNavigate();
+  useEffect(() => {
+    if (!countriesDetailsData) return;
+
+    const history = JSON.parse(localStorage.getItem("recentSearches")) || [];
+
+    const current = {
+      code: code,
+      name: countriesDetailsData?.name,
+      flag: countriesDetailsData?.flags?.svg || countriesDetailsData?.flag,
+    };
+
+    const filtered = history.filter((item) => item.code !== current.code);
+
+    const updated = [current, ...filtered];
+
+    localStorage.setItem("recentSearches", JSON.stringify(updated.slice(0, 3)));
+  }, [countriesDetailsData]);
+
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <button
-        onClick={() => navigate("/")}
-        className="mb-4 text-blue-500 hover:text-blue-700 flex items-center gap-2"
-      >
-        ← Back to Search
-      </button>
+    <div className="min-h-screen bg-gray-100 py-10 px-4">
+      <div className="max-w-4xl mx-auto mb-6">
+        <button
+          onClick={() => navigate("/")}
+          className="text-blue-600 hover:underline text-sm font-medium"
+        >
+          ← Back to Search
+        </button>
+      </div>
 
-      <h2 className="text-3xl font-bold mb-4">{countriesDetailsData.name}</h2>
-      <img
-        src={countriesDetailsData.flag}
-        alt={`${countriesDetailsData.name} flag`}
-        className="w-48 mb-6 shadow-lg rounded"
-      />
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <p>
-            <strong>Official Name:</strong> {countriesDetailsData.name}
-          </p>
-          <p>
-            <strong>Capital:</strong> {countriesDetailsData.capital || "N/A"}
-          </p>
-          <p>
-            <strong>Region:</strong> {countriesDetailsData.region || "N/A"}
-          </p>
-          <p>
-            <strong>Subregion:</strong>{" "}
-            {countriesDetailsData.subregion || "N/A"}
-          </p>
+      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden flex flex-col md:flex-row">
+        <div className="md:w-1/2 bg-gray-50 flex items-center justify-center p-6">
+          <img
+            src={countriesDetailsData.flag}
+            alt={`${countriesDetailsData.name} flag`}
+            className="max-w-full h-auto rounded-lg shadow"
+          />
         </div>
-        <div className="space-y-2">
-          <p>
-            <strong>Population:</strong>{" "}
-            {countriesDetailsData.population?.toLocaleString?.() ?? "N/A"}
-          </p>
-          <p>
-            <strong>Languages:</strong>{" "}
-            {countriesDetailsData.languages
-              ? Object.values(countriesDetailsData.languages).join(", ")
-              : "N/A"}
-          </p>
-          <p>
-            <strong>Country Code:</strong> {code}
-          </p>
+
+        <div className="md:w-1/2 p-6 space-y-4">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            {countriesDetailsData.name}
+          </h2>
+          <div className="space-y-2 text-gray-700 text-sm">
+            <p>
+              <strong>Official Name:</strong> {countriesDetailsData.name}
+            </p>
+            <p>
+              <strong>Capital:</strong> {countriesDetailsData.capital || "N/A"}
+            </p>
+            <p>
+              <strong>Region:</strong> {countriesDetailsData.region || "N/A"}
+            </p>
+            <p>
+              <strong>Subregion:</strong>{" "}
+              {countriesDetailsData.subregion || "N/A"}
+            </p>
+            <p>
+              <strong>Population:</strong>{" "}
+              {countriesDetailsData.population?.toLocaleString?.() ?? "N/A"}
+            </p>
+            <p>
+              <strong>Languages:</strong>{" "}
+              {countriesDetailsData.languages
+                ? Object.values(countriesDetailsData.languages).join(", ")
+                : "N/A"}
+            </p>
+            <p>
+              <strong>Country Code:</strong> {code}
+            </p>
+          </div>
         </div>
       </div>
     </div>

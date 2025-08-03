@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loading from "../components/Loading";
@@ -6,21 +6,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateCountriesDetailsData } from "../slices/manageCountries/countriesSlice";
 import { manageCountriesSelector } from "../slices/manageCountries/countriesSelector";
 import toast from "react-hot-toast";
-import { updateLoading } from "../slices/manageUI/uiStateSlice";
+import { updateError, updateLoading } from "../slices/manageUI/uiStateSlice";
 import { manageUiSelector } from "../slices/manageUI/uiStateSelector";
 import CountryCardDetails from "../components/CountryCardDetails";
 
 const CountryDetail = () => {
   const { code } = useParams();
-  const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { countriesDetailsData } = useSelector(manageCountriesSelector);
-  const { loading } = useSelector(manageUiSelector);
+  const { loading, error } = useSelector(manageUiSelector);
 
   useEffect(() => {
     const fetchCountry = async () => {
-      setError(null);
+      dispatch(updateError(null));
 
       dispatch(updateLoading(true));
       try {
@@ -38,7 +37,8 @@ const CountryDetail = () => {
 
         if (res.status === 404) {
           toast.error(`Country with code "${code}" not found!`);
-          setError("Country not found");
+          dispatch(updateError("Country not found"));
+
           dispatch(updateCountriesDetailsData(null));
         } else if (res.status >= 200 && res.status < 300) {
           dispatch(updateCountriesDetailsData(res.data));
@@ -47,24 +47,24 @@ const CountryDetail = () => {
           toast.error("Session expired. Please log in again.");
         } else if (res.status === 403) {
           toast.error("You don't have permission to view this country.");
-          setError("Access denied");
+          dispatch(updateError("Access denied"));
         } else {
           toast.error("Failed to fetch country details.");
-          setError("Failed to load country");
+          dispatch(updateError("Failed to load country"));
         }
       } catch (err) {
         if (err.response && err.response.status === 404) {
           toast.error(`Country with code "${code}" not found!`);
-          setError("Country not found");
+          dispatch(updateError("Country not found"));
           dispatch(updateCountriesDetailsData(null));
         } else if (err.response && err.response.status === 401) {
           toast.error("Session expired. Please log in again.");
-          setError("Authentication required");
+          dispatch(updateError("Authentication required"));
         } else {
           toast.error(
             "An unexpected error occurred while loading country details."
           );
-          setError("Network error");
+          dispatch(updateError("Network error"));
         }
       } finally {
         dispatch(updateLoading(false));
@@ -74,12 +74,12 @@ const CountryDetail = () => {
     if (code) {
       fetchCountry();
     } else {
-      setError("No country code provided");
+      dispatch(updateError("No country code provided"));
       dispatch(updateLoading(false));
     }
   }, [code, dispatch]);
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading fullscreen />;
 
   if (error || !countriesDetailsData) {
     return (

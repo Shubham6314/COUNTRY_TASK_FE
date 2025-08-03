@@ -29,7 +29,6 @@ const Login = () => {
 
       if (userData?.token) {
         localStorage.setItem("token", userData.token);
-        localStorage.setItem("user", JSON.stringify(userData));
         toast.success(res?.data?.message || "Login successful!");
         navigate("/");
       } else {
@@ -47,51 +46,50 @@ const Login = () => {
   const isPasswordValid = formData.password.length >= 6;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="max-w-md w-full bg-white p-8 rounded shadow">
-        <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+    <div className="min-h-screen flex items-center bg-[#EFA893] justify-center px-4">
+      <div className="relative w-full max-w-sm bg-[#2C003E] text-white rounded-3xl overflow-hidden shadow-lg p-8">
+        <h2 className="text-3xl font-bold mb-2 text-white">Welcome Back</h2>
+        <p className="mb-6 text-gray-200">Hey! Good to see you again</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
+              placeholder="Email"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 rounded-full text-black bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-400"
             />
             {!isEmailValid && formData.email && (
-              <p className="text-red-500 text-sm mt-1">Enter a valid email</p>
+              <p className="text-pink-300 text-sm mt-1">Enter a valid email</p>
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-2.5 text-gray-600 focus:outline-none"
-              >
-                {showPassword ? (
-                  <AiFillEyeInvisible size={20} />
-                ) : (
-                  <AiFillEye size={20} />
-                )}
-              </button>
-            </div>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Password"
+              required
+              className="w-full px-4 py-2 rounded-full text-black bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-400"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-4 top-2.5 text-gray-500"
+            >
+              {showPassword ? (
+                <AiFillEyeInvisible size={20} />
+              ) : (
+                <AiFillEye size={20} />
+              )}
+            </button>
             {!isPasswordValid && formData.password && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-pink-300 text-sm mt-1">
                 Password must be at least 6 characters
               </p>
             )}
@@ -100,19 +98,22 @@ const Login = () => {
           <button
             type="submit"
             disabled={!isEmailValid || !isPasswordValid || loading}
-            className={`w-full text-white py-2 rounded transition ${
+            className={`w-full py-2 rounded-full font-semibold text-white transition-all duration-200 ${
               !isEmailValid || !isPasswordValid || loading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
+                : "bg-pink-500 hover:bg-pink-600"
             }`}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Logging in..." : "LOGIN"}
           </button>
         </form>
 
-        <p className="text-sm text-center mt-4">
+        <p className="text-center text-sm mt-6 text-gray-300">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline">
+          <Link
+            to="/register"
+            className="text-pink-300 hover:underline font-medium"
+          >
             Register
           </Link>
         </p>

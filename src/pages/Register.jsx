@@ -44,82 +44,79 @@ const Register = () => {
 
       if (userData?.token) {
         localStorage.setItem("token", userData.token);
-        localStorage.setItem("user", JSON.stringify(userData));
-        toast.success(res?.data?.message || "Login successful!");
+        toast.success(res?.data?.message || "Registration successful!");
         navigate("/");
       } else {
-        toast.error("Invalid login response");
+        toast.error("Invalid registration response");
       }
     } catch (err) {
       console.error("Register failed:", err);
-      toast.error(err?.response?.data?.message || "Register failed");
+      toast.error(err?.response?.data?.message || "Registration failed");
     } finally {
       dispatch(updateLoading(false));
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+    <div className="min-h-screen flex items-center bg-[#EFA893] justify-center px-4">
+      <div className="relative w-full max-w-sm bg-[#2C003E] text-white rounded-3xl overflow-hidden shadow-lg p-8">
+        <h2 className="text-3xl font-bold mb-2 text-white">Register</h2>
+        <p className="mb-6 text-gray-200">Let’s get you started</p>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block mb-1 text-gray-700">Name</label>
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="name"
+              placeholder="Name"
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 rounded-full text-black bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-400"
             />
             {!isNameValid && formData.name && (
-              <p className="text-sm text-red-500 mt-1">Enter a valid name</p>
+              <p className="text-pink-300 text-sm mt-1">Enter a valid name</p>
             )}
           </div>
+
           <div>
-            <label className="block mb-1 text-gray-700">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="email"
+              placeholder="Email"
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 rounded-full text-black bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-400"
             />
             {!isEmailValid && formData.email && (
-              <p className="text-sm text-red-500 mt-1">Enter a valid email</p>
+              <p className="text-pink-300 text-sm mt-1">Enter a valid email</p>
             )}
           </div>
-          <div>
-            <label className="block mb-1 text-gray-700">Password</label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="password"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-2.5 text-gray-600"
-              >
-                {showPassword ? (
-                  <AiFillEyeInvisible size={20} />
-                ) : (
-                  <AiFillEye size={20} />
-                )}
-              </button>
-            </div>
+
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Password"
+              required
+              className="w-full px-4 py-2 rounded-full text-black bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-400"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-4 top-2.5 text-gray-500"
+            >
+              {showPassword ? (
+                <AiFillEyeInvisible size={20} />
+              ) : (
+                <AiFillEye size={20} />
+              )}
+            </button>
             {!isPasswordValid && formData.password && (
-              <p className="text-sm text-red-500 mt-1">
+              <p className="text-pink-300 text-sm mt-1">
                 Password must be at least 6 characters
               </p>
             )}
@@ -127,24 +124,24 @@ const Register = () => {
 
           <button
             type="submit"
-            disabled={loading || !isFormValid}
-            className={`w-full py-2 rounded-md transition ${
-              loading || !isFormValid
+            disabled={!isFormValid || loading}
+            className={`w-full py-2 rounded-full font-semibold text-white transition-all duration-200 ${
+              !isFormValid || loading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
+                : "bg-pink-500 hover:bg-pink-600"
             }`}
           >
-            {loading ? "Registering..." : "Register"}
+            {loading ? "Registering..." : "REGISTER"}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="text-center text-sm mt-6 text-gray-300">
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-blue-600 hover:underline font-medium"
+            className="text-pink-300 hover:underline font-medium"
           >
-            Login here
+            Login
           </Link>
         </p>
       </div>
